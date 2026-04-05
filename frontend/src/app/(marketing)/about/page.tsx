@@ -4,12 +4,7 @@ import Link from 'next/link';
 import { Globe, Bot, GraduationCap, LockOpen } from 'lucide-react';
 
 const TEAM = [
-  { name: 'Dr. Amina Osei', role: 'CEO & Co-Founder', bio: 'Former data scientist at M-Kopa. PhD in Machine Learning from University of Nairobi.', accent: '#00d4ff', initials: 'AO' },
-  { name: 'Brian Otieno', role: 'CTO & Co-Founder', bio: '10+ years building scalable systems. Previously at Andela and Flutterwave.', accent: '#f97316', initials: 'BO' },
-  { name: 'Prof. Jane Wangari', role: 'Head of Curriculum', bio: 'Associate Professor of Data Science. Published author with 20+ academic papers.', accent: '#a855f7', initials: 'JW' },
-  { name: 'Kevin Mwenda', role: 'Head of AI', bio: 'Built production ML systems at Safaricom and leading pan-African fintech.', accent: '#10b981', initials: 'KM' },
-  { name: 'Aisha Kamau', role: 'Head of Product', bio: 'Product veteran with 8 years in edtech. Former VP Product at uLesson.', accent: '#f59e0b', initials: 'AK' },
-  { name: 'David Njoroge', role: 'Head of Community', bio: 'Community builder and data evangelist. Organiser of PyCon Africa.', accent: '#ec4899', initials: 'DN' },
+  { name: 'Peter Gatitu Mwangi', role: 'Lead Data Scientist at LuxDevHQ', bio: '', accent: '#00d4ff', initials: 'PG' },
 ];
 
 const VALUES = [
@@ -99,17 +94,16 @@ export default function AboutPage() {
             <span className="text-xs font-semibold tracking-widest uppercase mb-3 block" style={{ color: '#00d4ff' }}>The Team</span>
             <h2 className="text-4xl font-extrabold text-white">Built by practitioners, for learners</h2>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="flex justify-center">
             {TEAM.map((m, i) => (
               <motion.div key={m.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }}
-                className="p-6 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white mb-4"
+                className="p-8 rounded-2xl w-full max-w-sm text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4"
                   style={{ background: `${m.accent}25`, border: `1px solid ${m.accent}40`, color: m.accent }}>
                   {m.initials}
                 </div>
-                <h3 className="text-white font-semibold">{m.name}</h3>
-                <p className="text-xs mb-3 font-medium" style={{ color: m.accent }}>{m.role}</p>
-                <p className="text-white/40 text-sm leading-relaxed">{m.bio}</p>
+                <h3 className="text-white font-semibold text-lg">{m.name}</h3>
+                <p className="text-sm mt-1 font-medium" style={{ color: m.accent }}>{m.role}</p>
               </motion.div>
             ))}
           </div>
