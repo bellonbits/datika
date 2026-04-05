@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Globe, Bot, GraduationCap, LockOpen } from 'lucide-react';
 
 const TEAM = [
-  { name: 'Peter Gatitu Mwangi', role: 'Lead Data Scientist at LuxDevHQ', bio: '', accent: '#00d4ff', initials: 'PG' },
+  { name: 'Peter Gatitu Mwangi', role: 'CEO & Founder — Former Lead Data Scientist at LuxDevHQ', bio: '', accent: '#00d4ff', initials: 'PG' },
 ];
 
 const VALUES = [
