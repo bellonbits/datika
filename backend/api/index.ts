@@ -12,6 +12,11 @@ import type { IncomingMessage } from 'http';
 
 const server = express();
 
+// Root health check — responds before NestJS initialises
+server.get('/', (_req, res) => {
+  res.json({ status: 'ok', name: 'Datika API', version: '1.0.0', docs: '/api/docs' });
+});
+
 let isReady = false;
 
 async function bootstrap() {
