@@ -2,17 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const express = require('express') as typeof import('express');
 import { json, raw } from 'express';
+import type { Request, Response } from 'express';
+import type { IncomingMessage } from 'http';
 import { AppModule } from '../src/app.module';
 import { ResponseInterceptor } from '../src/common/interceptors/response.interceptor';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
-import type { IncomingMessage } from 'http';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const express = require('express') as typeof import('express');
 
 const server = express();
 
-// Root health check — responds before NestJS initialises
+// Root health check
 server.get('/', (_req, res) => {
   res.json({ status: 'ok', name: 'Datika API', version: '1.0.0', docs: '/api/docs' });
 });
@@ -32,7 +34,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
-  // Raw body for webhook signature verification
   app.use('/api/v1/payments/webhook', raw({ type: '*/*' }));
 
   app.use(
@@ -67,9 +68,7 @@ async function bootstrap() {
   return server;
 }
 
-import type { Request, Response } from 'express';
-
 export default async (req: Request, res: Response) => {
-  const app = await bootstrap();
-  app(req, res);
+  await bootstrap();
+  server(req, res);
 };
