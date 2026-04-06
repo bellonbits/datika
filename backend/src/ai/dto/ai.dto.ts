@@ -121,6 +121,16 @@ export class GenerateCourseDto {
   @IsString()
   prompt: string;
 
+  @ApiPropertyOptional({ example: '10 weeks' })
+  @IsString()
+  @IsOptional()
+  duration?: string;
+
+  @ApiPropertyOptional({ example: 4999 })
+  @IsNumber()
+  @IsOptional()
+  amount?: number;
+
   @ApiPropertyOptional({ example: 'A deep dive into hooks, suspense, and performance' })
   @IsString()
   @IsOptional()

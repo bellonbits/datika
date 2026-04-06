@@ -142,6 +142,7 @@ model Course {
   level        CourseLevel @default(BEGINNER)
   status       CourseStatus @default(DRAFT)
   category     String?
+  duration     String?
   tags         String[]
   instructorId String
   createdAt    DateTime    @default(now())

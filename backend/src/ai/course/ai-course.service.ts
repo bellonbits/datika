@@ -43,9 +43,11 @@ export class AiCourseService extends AiBaseService {
     const userPrompt = `
 Generate course metadata AND a curriculum blueprint (at least 3-4 sections with 3-5 lessons each) for the following idea:
 Prompt: ${dto.prompt}
+${dto.duration ? `Course Duration Goal: ${dto.duration}` : ''}
+${dto.amount ? `Intended Price: ${dto.amount} KES` : ''}
 ${dto.context ? `Additional Context: ${dto.context}` : ''}
 
-Ensure the curriculum is logically structured and the description is engaging.
+Ensure the curriculum is logically structured, the description is engaging, and the content is appropriate for the target duration and price.
     `;
 
     return this.callWithJson<{

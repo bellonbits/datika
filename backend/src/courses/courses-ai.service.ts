@@ -18,6 +18,8 @@ export class CoursesAiService {
       description: string;
       category: string;
       level: string;
+      duration?: string;
+      price?: number;
       tags: string[];
       sections: {
         title: string;
@@ -34,12 +36,13 @@ export class CoursesAiService {
           title: data.title,
           description: data.description,
           category: data.category,
+          duration: data.duration,
           level: (data.level as CourseLevel) || CourseLevel.BEGINNER,
           tags: data.tags,
           slug,
           instructorId,
           status: CourseStatus.DRAFT,
-          price: 0, 
+          price: data.price ?? 0, 
         } as any,
       });
 
