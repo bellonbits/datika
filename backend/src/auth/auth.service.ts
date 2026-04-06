@@ -122,6 +122,15 @@ export class AuthService {
     return tokens;
   }
 
+  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.passwordHash) throw new UnauthorizedException('Cannot change password for OAuth accounts');
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) throw new UnauthorizedException('Current password is incorrect');
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  }
+
   async logout(userId: string, refreshToken: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({
       where: { userId, token: refreshToken },

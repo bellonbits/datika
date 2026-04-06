@@ -126,6 +126,27 @@ export class CoursesService {
     return this.prisma.section.create({ data: { ...dto, courseId } });
   }
 
+  async enrollStudent(courseId: string, studentId: string) {
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const existing = await this.prisma.enrollment.findUnique({
+      where: { studentId_courseId: { studentId, courseId } },
+    });
+    if (existing) {
+      return { message: 'Already enrolled', enrollment: existing };
+    }
+
+    if (course.price && course.price > 0) {
+      throw new ForbiddenException('This course requires payment. Use the payment flow to enroll.');
+    }
+
+    const enrollment = await this.prisma.enrollment.create({
+      data: { studentId, courseId, status: 'ACTIVE', progress: 0 },
+    });
+    return { message: 'Enrolled successfully', enrollment };
+  }
+
   async getAdminStats() {
     const [total, published, draft, totalEnrollments, totalRevenue] = await Promise.all([
       this.prisma.course.count(),

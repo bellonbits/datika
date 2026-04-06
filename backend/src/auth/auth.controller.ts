@@ -8,6 +8,7 @@ import {
   Res,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -74,6 +75,19 @@ export class AuthController {
   async me(@CurrentUser() user: User) {
     const { passwordHash: _, ...safeUser } = user as User & { passwordHash?: string };
     return { data: safeUser, message: 'User profile retrieved' };
+  }
+
+  @Patch('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change password for authenticated user' })
+  async changePassword(
+    @CurrentUser() user: User,
+    @Body() body: { currentPassword: string; newPassword: string },
+  ) {
+    await this.authService.changePassword(user.id, body.currentPassword, body.newPassword);
+    return { data: null, message: 'Password changed successfully' };
   }
 
   // ─── Google OAuth ────────────────────────────────────────────────────────

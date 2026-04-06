@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { useRouter } from 'next/navigation';
+import { usersApi } from '@/lib/api/users.api';
 
 const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
 
@@ -53,9 +54,44 @@ export default function SettingsPage() {
   const toggleNotif = (k: keyof typeof notifs) => setNotifs((p) => ({ ...p, [k]: !p[k] }));
   const togglePrivacy = (k: keyof typeof privacy) => setPrivacy((p) => ({ ...p, [k]: !p[k] }));
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const [saveError, setSaveError] = useState('');
+  const [pwCurrent, setPwCurrent] = useState('');
+  const [pwNew, setPwNew] = useState('');
+  const [pwConfirm, setPwConfirm] = useState('');
+  const [pwSaved, setPwSaved] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+
+  const handleSave = async () => {
+    setSaveError('');
+    try {
+      await usersApi.updateProfile({ name, phone, country, bio });
+      useAuthStore.getState().updateUser({ name });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      setSaveError(axiosErr?.response?.data?.message ?? 'Failed to save. Please try again.');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPwError('');
+    if (!pwCurrent || !pwNew || !pwConfirm) { setPwError('All fields are required.'); return; }
+    if (pwNew !== pwConfirm) { setPwError('New passwords do not match.'); return; }
+    if (pwNew.length < 8) { setPwError('New password must be at least 8 characters.'); return; }
+    setPwLoading(true);
+    try {
+      await usersApi.changePassword({ currentPassword: pwCurrent, newPassword: pwNew });
+      setPwSaved(true);
+      setPwCurrent(''); setPwNew(''); setPwConfirm('');
+      setTimeout(() => setPwSaved(false), 2500);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      setPwError(axiosErr?.response?.data?.message ?? 'Failed to update password.');
+    } finally {
+      setPwLoading(false);
+    }
   };
 
   return (
@@ -147,8 +183,11 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between mt-5 pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                  {saved && <span className="text-xs font-medium" style={{ color: '#10b981' }}>Changes saved successfully</span>}
-                  {!saved && <span />}
+                  <div>
+                    {saved && <span className="text-xs font-medium" style={{ color: '#10b981' }}>Changes saved successfully</span>}
+                    {saveError && <span className="text-xs font-medium text-red-400">{saveError}</span>}
+                    {!saved && !saveError && <span />}
+                  </div>
                   <button onClick={handleSave} className="h-9 px-6 rounded-xl text-sm font-semibold text-white transition-all"
                     style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)', boxShadow: '0 0 16px rgba(249,115,22,0.2)' }}>
                     Save changes
@@ -160,10 +199,14 @@ export default function SettingsPage() {
               <div className="p-6 rounded-2xl" style={card}>
                 <h2 className="text-white font-semibold mb-5">Change password</h2>
                 <div className="space-y-3">
-                  {['Current password', 'New password', 'Confirm new password'].map((label) => (
-                    <div key={label}>
-                      <label className="block text-xs font-medium text-white/50 mb-1.5">{label}</label>
-                      <input type="password" placeholder="••••••••"
+                  {[
+                    { label: 'Current password', value: pwCurrent, onChange: setPwCurrent },
+                    { label: 'New password', value: pwNew, onChange: setPwNew },
+                    { label: 'Confirm new password', value: pwConfirm, onChange: setPwConfirm },
+                  ].map((f) => (
+                    <div key={f.label}>
+                      <label className="block text-xs font-medium text-white/50 mb-1.5">{f.label}</label>
+                      <input type="password" value={f.value} onChange={(e) => f.onChange(e.target.value)} placeholder="••••••••"
                         className="w-full h-10 px-3 rounded-xl text-sm text-white placeholder:text-white/20 outline-none"
                         style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
                         onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.35)'; }}
@@ -172,10 +215,13 @@ export default function SettingsPage() {
                     </div>
                   ))}
                 </div>
+                {pwError && <p className="text-red-400 text-xs mt-3">{pwError}</p>}
+                {pwSaved && <p className="text-xs mt-3" style={{ color: '#10b981' }}>Password updated successfully</p>}
                 <div className="flex justify-end mt-4">
-                  <button className="h-9 px-6 rounded-xl text-sm font-semibold text-white/70 transition-all"
+                  <button onClick={handleChangePassword} disabled={pwLoading}
+                    className="h-9 px-6 rounded-xl text-sm font-semibold text-white/70 transition-all disabled:opacity-50"
                     style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    Update password
+                    {pwLoading ? 'Updating...' : 'Update password'}
                   </button>
                 </div>
               </div>

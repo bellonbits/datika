@@ -91,6 +91,16 @@ export class CoursesController {
     return this.coursesService.delete(id, user.id, user.role);
   }
 
+  @Post(':id/enroll')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Enroll in a free course' })
+  enroll(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.coursesService.enrollStudent(id, user.id);
+  }
+
   @Post(':id/sections')
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
   @ApiBearerAuth()
