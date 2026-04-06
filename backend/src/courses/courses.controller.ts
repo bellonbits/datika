@@ -5,6 +5,7 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { CoursesService } from './courses.service';
+import { CoursesAiService } from './courses-ai.service';
 import { CreateCourseDto, UpdateCourseDto, CreateSectionDto } from './dto/course.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -16,7 +17,10 @@ import { Public } from '../common/decorators/public.decorator';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly coursesAiService: CoursesAiService,
+  ) {}
 
   @Public()
   @Get()
@@ -89,6 +93,14 @@ export class CoursesController {
   @ApiOperation({ summary: 'Create a new course' })
   create(@Body() dto: CreateCourseDto, @CurrentUser() user: { id: string }) {
     return this.coursesService.create(dto, user.id);
+  }
+
+  @Post('ai-bulk')
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a full course draft from an AI blueprint' })
+  createFromAiBlueprint(@Body() dto: any, @CurrentUser() user: { id: string }) {
+    return this.coursesAiService.createFromBlueprint(user.id, dto);
   }
 
   @Patch(':id')

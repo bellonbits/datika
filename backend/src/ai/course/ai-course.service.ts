@@ -21,7 +21,15 @@ OUTPUT SCHEMA:
   "description": "string (2-3 paragraphs)",
   "category": "string (e.g. Data Science)",
   "level": "BEGINNER|INTERMEDIATE|ADVANCED",
-  "tags": ["string"]
+  "tags": ["string"],
+  "sections": [
+    {
+      "title": "string",
+      "lessons": [
+        { "title": "string", "type": "VIDEO|TEXT" }
+      ]
+    }
+  ]
 }
 `;
 
@@ -33,11 +41,11 @@ export class AiCourseService extends AiBaseService {
 
   async generateMetadata(dto: GenerateCourseDto) {
     const userPrompt = `
-Generate course metadata for the following idea:
+Generate course metadata AND a curriculum blueprint (at least 3-4 sections with 3-5 lessons each) for the following idea:
 Prompt: ${dto.prompt}
 ${dto.context ? `Additional Context: ${dto.context}` : ''}
 
-Ensure the description is engaging and professional.
+Ensure the curriculum is logically structured and the description is engaging.
     `;
 
     return this.callWithJson<{
@@ -46,6 +54,10 @@ Ensure the description is engaging and professional.
       category: string;
       level: string;
       tags: string[];
+      sections: {
+        title: string;
+        lessons: { title: string; type: string }[];
+      }[];
     }>(
       COURSE_SYSTEM_PROMPT,
       userPrompt,
