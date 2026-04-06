@@ -2,8 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const express = require('express') as typeof import('express');
 import { json, raw } from 'express';
-import * as express from 'express';
 import { AppModule } from '../src/app.module';
 import { ResponseInterceptor } from '../src/common/interceptors/response.interceptor';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
@@ -61,7 +62,9 @@ async function bootstrap() {
   return server;
 }
 
-export default async (req: express.Request, res: express.Response) => {
+import type { Request, Response } from 'express';
+
+export default async (req: Request, res: Response) => {
   const app = await bootstrap();
   app(req, res);
 };
