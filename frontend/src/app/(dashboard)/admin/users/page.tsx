@@ -29,10 +29,10 @@ export default function AdminUsersPage() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-users'],
-    queryFn: () => apiClient.get('/users') as Promise<{ data: User[]; total: number }>,
+    queryFn: () => apiClient.get('/users') as Promise<{ users: User[]; total: number }>,
   });
 
-  const users: User[] = (data as unknown as { data: User[] })?.data ?? [];
+  const users: User[] = (data as unknown as { users: User[] })?.users ?? [];
 
   const filtered = users.filter((u) => {
     const matchRole = roleFilter === 'All' || u.role === roleFilter;

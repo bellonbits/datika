@@ -143,7 +143,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ring-1 ring-cyan-500/30 transition-all"
               style={{ background: 'linear-gradient(135deg, #0d6efd, #0a58ca)' }}
             >
-              {user.name[0].toUpperCase()}
+              {user.name?.[0]?.toUpperCase() ?? '?'}
             </button>
           </Tooltip>
 

@@ -26,11 +26,17 @@ const STATUS_COLOR: Record<string, string> = {
 export default function AdminRevenuePage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-revenue'],
-    queryFn: () => apiClient.get('/admin/revenue') as Promise<{ data: { payments: Payment[]; totalRevenue: number; thisMonth: number } }>,
+    queryFn: () => apiClient.get('/admin/revenue') as Promise<{
+      recentPayments: Payment[];
+      totalRevenue: number;
+      monthlyRevenue: number;
+      totalTransactions: number;
+      monthlyTransactions: number;
+    }>,
   });
 
-  const revenue = (data as unknown as { data: { payments: Payment[]; totalRevenue: number; thisMonth: number } })?.data;
-  const payments = revenue?.payments ?? [];
+  const revenue = data;
+  const payments = revenue?.recentPayments ?? [];
 
   return (
     <div className="p-6 h-full overflow-auto text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -44,8 +50,8 @@ export default function AdminRevenuePage() {
         className="grid grid-cols-3 gap-4 mb-6">
         {[
           { label: 'Total Revenue', value: isLoading ? '—' : `KES ${(revenue?.totalRevenue ?? 0).toLocaleString()}`, accent: '#10b981' },
-          { label: 'This Month', value: isLoading ? '—' : `KES ${(revenue?.thisMonth ?? 0).toLocaleString()}`, accent: '#00d4ff' },
-          { label: 'Total Transactions', value: isLoading ? '—' : payments.length, accent: '#f97316' },
+          { label: 'This Month', value: isLoading ? '—' : `KES ${(revenue?.monthlyRevenue ?? 0).toLocaleString()}`, accent: '#00d4ff' },
+          { label: 'Total Transactions', value: isLoading ? '—' : revenue?.totalTransactions ?? 0, accent: '#f97316' },
         ].map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.05 }}
             className="p-4 rounded-2xl" style={card}>
