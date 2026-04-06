@@ -3,9 +3,8 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/auth.store';
-
-const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
-
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api/client';
 import { 
   Users, 
   BookOpen, 
@@ -18,30 +17,53 @@ import {
   BarChart3
 } from 'lucide-react';
 
-const STATS = [
-  { label: 'Total students', value: '248', delta: '+12 this month', accent: '#00d4ff', icon: <Users size={16} /> },
-  { label: 'Active courses', value: '6', delta: '2 in draft', accent: '#a855f7', icon: <BookOpen size={16} /> },
-  { label: 'Revenue (KES)', value: '84,200', delta: '+18% vs last month', accent: '#f97316', icon: <CreditCard size={16} /> },
-  { label: 'Avg. completion', value: '71%', delta: 'Up from 64%', accent: '#10b981', icon: <TrendingUp size={16} /> },
-];
+const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
 
-const COURSES = [
-  { title: 'Introduction to Machine Learning', students: 98, completion: 68, accent: '#00d4ff', status: 'PUBLISHED', icon: <Bot size={20} /> },
-  { title: 'Python for Data Science', students: 74, completion: 81, accent: '#f97316', status: 'PUBLISHED', icon: <Terminal size={20} /> },
-  { title: 'SQL Mastery', students: 62, completion: 55, accent: '#a855f7', status: 'PUBLISHED', icon: <Database size={20} /> },
-  { title: 'Data Visualisation with Python', students: 14, completion: 40, accent: '#6b7280', status: 'DRAFT', icon: <BarChart3 size={20} /> },
-];
+interface Course {
+  id: string;
+  title: string;
+  status: string;
+  _count: { enrollments: number; sections: number };
+}
 
-const ENROLLMENTS = [
-  { name: 'Alice Kamau', course: 'Machine Learning', time: '2h ago', color: '#00d4ff' },
-  { name: 'Brian Ochieng', course: 'Python for Data Science', time: '5h ago', color: '#f97316' },
-  { name: 'Carol Njeri', course: 'SQL Mastery', time: 'Yesterday', color: '#a855f7' },
-  { name: 'David Mwangi', course: 'Machine Learning', time: 'Yesterday', color: '#10b981' },
-];
+interface Enrollment {
+  id: string;
+  name: string;
+  email: string;
+  courseTitle: string;
+  enrolledAt: string;
+}
 
 export default function InstructorDashboard() {
   const user = useAuthStore((s) => s.user);
   const router = useRouter();
+
+  // 1. Fetch Instructor Courses
+  const { data: coursesData, isLoading: coursesLoading } = useQuery({
+    queryKey: ['instructor-courses-dashboard'],
+    queryFn: () => apiClient.get('/courses/my-courses') as Promise<Course[]>,
+  });
+
+  // 2. Fetch Recent Students/Enrollments
+  const { data: studentsData, isLoading: studentsLoading } = useQuery({
+    queryKey: ['instructor-students-dashboard'],
+    queryFn: () => apiClient.get('/courses/instructor/students') as Promise<Enrollment[]>,
+  });
+
+  const courses = coursesData ?? [];
+  const enrollments = studentsData ?? [];
+
+  // Derive stats
+  const totalStudents = enrollments.length;
+  const activeCourses = courses.filter(c => c.status === 'PUBLISHED').length;
+  const draftCourses = courses.length - activeCourses;
+
+  const statsList = [
+    { label: 'Total students', value: totalStudents, delta: 'All time', accent: '#00d4ff', icon: <Users size={16} /> },
+    { label: 'Active courses', value: activeCourses, delta: `${draftCourses} in draft`, accent: '#a855f7', icon: <BookOpen size={16} /> },
+    { label: 'Platform Status', value: 'Active', delta: 'System online', accent: '#10b981', icon: <TrendingUp size={16} /> },
+    { label: 'Resources', value: courses.reduce((acc, c) => acc + (c._count?.sections ?? 0), 0), delta: 'Total sections', accent: '#f97316', icon: <Database size={16} /> },
+  ];
 
   return (
     <div className="p-6 space-y-5 text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -52,7 +74,7 @@ export default function InstructorDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {STATS.map((s, i) => (
+        {statsList.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="p-5 rounded-2xl" style={card}>
             <div className="flex items-center gap-2 mb-4">
@@ -76,24 +98,20 @@ export default function InstructorDashboard() {
             <button onClick={() => router.push('/instructor/courses')} className="text-xs hover:text-white/60 transition-colors" style={{ color: '#00d4ff' }}>Manage all →</button>
           </div>
           <div>
-            {COURSES.map((c, i) => (
-              <div key={i} className="flex items-center gap-4 px-5 py-3.5 transition-all cursor-pointer"
-                style={{ borderBottom: i < COURSES.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
+            {coursesLoading && <p className="p-5 text-white/20">Loading courses...</p>}
+            {!coursesLoading && courses.length === 0 && <p className="p-5 text-white/20">No courses yet.</p>}
+            {courses.map((c, i) => (
+              <div key={c.id} className="flex items-center gap-4 px-5 py-3.5 transition-all cursor-pointer"
+                style={{ borderBottom: i < courses.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
                 <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center" 
-                  style={{ background: `${c.accent}15`, border: `1px solid ${c.accent}25`, color: c.accent }}>
-                  {c.icon}
+                  style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', color: '#00d4ff' }}>
+                  <BookOpen size={20} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/75 truncate">{c.title}</p>
-                  <p className="text-xs text-white/30">{c.students} students</p>
-                </div>
-                <div className="flex-shrink-0 w-24 text-right">
-                  <div className="text-xs font-semibold text-white/60 mb-1">{c.completion}%</div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${c.completion}%`, background: c.accent }} />
-                  </div>
+                  <p className="text-xs text-white/30">{c._count?.enrollments ?? 0} students</p>
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full flex-shrink-0"
                   style={c.status === 'PUBLISHED'
@@ -121,19 +139,20 @@ export default function InstructorDashboard() {
           <div className="rounded-2xl overflow-hidden flex-1" style={card}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <h2 className="font-semibold text-white/80">New enrollments</h2>
-              <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center" style={{ background: 'rgba(0,212,255,0.15)', color: '#00d4ff' }}>{ENROLLMENTS.length}</span>
+              <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center" style={{ background: 'rgba(0,212,255,0.15)', color: '#00d4ff' }}>{enrollments.length}</span>
             </div>
-            {ENROLLMENTS.map((e, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3.5" style={{ borderBottom: i < ENROLLMENTS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+            {studentsLoading && <p className="p-5 text-white/20">Loading enrollments...</p>}
+            {enrollments.slice(0, 5).map((e, i) => (
+              <div key={e.id + e.courseTitle} className="flex items-center gap-3 px-5 py-3.5" style={{ borderBottom: i < enrollments.slice(0, 5).length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                  style={{ background: `${e.color}25`, border: `1px solid ${e.color}40`, color: e.color }}>
+                  style={{ background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', color: '#00d4ff' }}>
                   {e.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/70 truncate">{e.name}</p>
-                  <p className="text-xs text-white/30 truncate">{e.course}</p>
+                  <p className="text-xs text-white/30 truncate">{e.courseTitle}</p>
                 </div>
-                <span className="text-xs text-white/25">{e.time}</span>
+                <span className="text-xs text-white/25">Recently</span>
               </div>
             ))}
           </div>

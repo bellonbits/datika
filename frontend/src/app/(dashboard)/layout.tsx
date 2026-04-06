@@ -41,7 +41,7 @@ const adminNav = [
   { key: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' },
 ];
 
-const PEER_COLORS = ['#00d4ff', '#f97316', '#a855f7'];
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -108,14 +108,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Bottom */}
         <div className="flex flex-col items-center gap-2.5 flex-shrink-0">
-          {/* Peer avatars */}
-          {PEER_COLORS.map((color, i) => (
-            <Tooltip key={i} title={`Peer ${i + 1}`} placement="right">
-              <div className="w-7 h-7 rounded-full cursor-pointer ring-1 ring-white/10 hover:scale-110 transition-transform"
-                style={{ background: `radial-gradient(circle at 35% 35%, ${color}cc, ${color}44)` }} />
-            </Tooltip>
-          ))}
-
           <div className="w-8 h-px my-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
           {/* User avatar */}
