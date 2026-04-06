@@ -57,7 +57,7 @@ export default function InstructorCoursesPage() {
         <button
           className="h-9 px-5 rounded-xl text-sm font-semibold text-white"
           style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)', boxShadow: '0 0 16px rgba(249,115,22,0.2)' }}
-          onClick={() => router.push('/instructor')}>
+          onClick={() => router.push('/instructor/courses/new')}>
           + New Course
         </button>
       </motion.div>
