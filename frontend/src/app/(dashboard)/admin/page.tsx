@@ -2,14 +2,24 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { 
+  Users, 
+  BookOpen, 
+  CreditCard, 
+  Bot, 
+  ClipboardList, 
+  BarChart3, 
+  Settings,
+  Plus
+} from 'lucide-react';
 
 const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
 
 const STATS = [
-  { label: 'Total users', value: '1,284', delta: '+34 this week', accent: '#00d4ff', icon: '👥' },
-  { label: 'Active courses', value: '24', delta: '6 pending review', accent: '#a855f7', icon: '📚' },
-  { label: 'Revenue (KES)', value: '342,800', delta: '+22% this month', accent: '#f97316', icon: '💰' },
-  { label: 'AI generations', value: '8,420', delta: 'Last 30 days', accent: '#10b981', icon: '🤖' },
+  { label: 'Total users', value: '1,284', delta: '+34 this week', accent: '#00d4ff', icon: <Users size={24} /> },
+  { label: 'Active courses', value: '24', delta: '6 pending review', accent: '#a855f7', icon: <BookOpen size={24} /> },
+  { label: 'Revenue (KES)', value: '342,800', delta: '+22% this month', accent: '#f97316', icon: <CreditCard size={24} /> },
+  { label: 'AI generations', value: '8,420', delta: 'Last 30 days', accent: '#10b981', icon: <Bot size={24} /> },
 ];
 
 const USERS = [
@@ -45,7 +55,7 @@ export default function AdminDashboard() {
         {STATS.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="p-5 rounded-2xl" style={card}>
-            <div className="text-2xl mb-3">{s.icon}</div>
+            <div className="mb-4" style={{ color: s.accent }}>{s.icon}</div>
             <div className="text-2xl font-extrabold text-white">{s.value}</div>
             <div className="text-xs text-white/35 mt-0.5">{s.label}</div>
             <div className="text-xs mt-2 font-medium" style={{ color: s.accent }}>{s.delta}</div>
@@ -66,7 +76,7 @@ export default function AdminDashboard() {
               style={{ borderBottom: i < USERS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0"
                 style={{ background: `${u.color}20`, border: `1px solid ${u.color}35`, color: u.color }}>
                 {u.name[0]}
               </div>
@@ -114,17 +124,17 @@ export default function AdminDashboard() {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
         className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Manage users', icon: '👥', path: '/admin/users', accent: '#00d4ff' },
-          { label: 'Review courses', icon: '📋', path: '/admin/content', accent: '#a855f7' },
-          { label: 'Revenue report', icon: '📊', path: '/admin/revenue', accent: '#10b981' },
-          { label: 'Settings', icon: '⚙️', path: '/admin/settings', accent: '#f97316' },
+          { label: 'User Management', icon: <Users size={24} />, path: '/admin/users', accent: '#00d4ff' },
+          { label: 'All Courses', icon: <BookOpen size={24} />, path: '/admin/courses', accent: '#a855f7' },
+          { label: 'Revenue Report', icon: <BarChart3 size={24} />, path: '/admin/revenue', accent: '#10b981' },
+          { label: 'Platform Settings', icon: <Settings size={24} />, path: '/admin/settings', accent: '#f97316' },
         ].map((a) => (
           <button key={a.label} onClick={() => router.push(a.path)}
             className="p-4 rounded-2xl text-left transition-all"
             style={card}
             onMouseEnter={(e) => { e.currentTarget.style.background = `${a.accent}08`; e.currentTarget.style.borderColor = `${a.accent}30`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-            <div className="text-2xl mb-3">{a.icon}</div>
+            <div className="mb-3" style={{ color: a.accent }}>{a.icon}</div>
             <p className="text-sm font-semibold text-white/70">{a.label}</p>
           </button>
         ))}

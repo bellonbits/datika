@@ -1,6 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { 
+  CreditCard, 
+  TrendingUp, 
+  Activity, 
+  Search, 
+  Filter, 
+  ArrowUpRight, 
+  Calendar 
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 
@@ -40,23 +49,33 @@ export default function AdminRevenuePage() {
 
   return (
     <div className="p-6 h-full overflow-auto text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <h1 className="text-2xl font-extrabold text-white mb-1">Revenue</h1>
-        <p className="text-white/40 text-sm">Payment history and revenue analytics</p>
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white mb-1">Revenue Analytics</h1>
+          <p className="text-white/40 text-sm">Financial performance and transaction history</p>
+        </div>
+        <button className="h-10 px-4 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold hover:bg-white/10 transition-all flex items-center gap-2">
+          <Calendar size={14} />
+          Last 30 Days
+        </button>
       </motion.div>
 
       {/* Stats */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
         className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: 'Total Revenue', value: isLoading ? '—' : `KES ${(revenue?.totalRevenue ?? 0).toLocaleString()}`, accent: '#10b981' },
-          { label: 'This Month', value: isLoading ? '—' : `KES ${(revenue?.monthlyRevenue ?? 0).toLocaleString()}`, accent: '#00d4ff' },
-          { label: 'Total Transactions', value: isLoading ? '—' : revenue?.totalTransactions ?? 0, accent: '#f97316' },
+          { label: 'Total Revenue', value: isLoading ? '—' : `KES ${(revenue?.totalRevenue ?? 0).toLocaleString()}`, accent: '#10b981', icon: <CreditCard size={18} /> },
+          { label: 'Monthly Growth', value: isLoading ? '—' : `KES ${(revenue?.monthlyRevenue ?? 0).toLocaleString()}`, accent: '#00d4ff', icon: <TrendingUp size={18} /> },
+          { label: 'Total Transactions', value: isLoading ? '—' : (revenue?.totalTransactions ?? 0).toLocaleString(), accent: '#f97316', icon: <Activity size={18} /> },
         ].map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.05 }}
-            className="p-4 rounded-2xl" style={card}>
-            <p className="text-2xl font-extrabold mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-white/40 text-xs">{s.label}</p>
+            className="p-5 rounded-2xl relative overflow-hidden" style={card}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg" style={{ background: `${s.accent}15`, color: s.accent }}>{s.icon}</div>
+              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{s.label}</span>
+            </div>
+            <p className="text-2xl font-extrabold" style={{ color: s.accent }}>{s.value}</p>
+            <div className="absolute top-4 right-4 text-white/10"><ArrowUpRight size={24} /></div>
           </motion.div>
         ))}
       </motion.div>

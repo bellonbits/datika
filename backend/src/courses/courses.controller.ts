@@ -42,6 +42,29 @@ export class CoursesController {
     return this.coursesService.findByInstructor(user.id);
   }
 
+  @Get('admin/all')
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get ALL courses (Admin)' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  findAllAdmin(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
+  ) {
+    return this.coursesService.findAllAdmin(page, limit, search);
+  }
+
+  @Get('instructor/students')
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get learners enrolled in instructor courses' })
+  findInstructorStudents(@CurrentUser() user: { id: string }) {
+    return this.coursesService.findInstructorStudents(user.id);
+  }
+
   @Get('admin/stats')
   @Roles(Role.ADMIN)
   @ApiBearerAuth()

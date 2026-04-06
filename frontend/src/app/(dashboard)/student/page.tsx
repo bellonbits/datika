@@ -4,6 +4,18 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { useRouter } from 'next/navigation';
+import { 
+  Flame, 
+  Bot, 
+  Send, 
+  Play, 
+  Pause, 
+  Clock, 
+  Layers, 
+  Activity,
+  CheckCircle2,
+  ChevronRight
+} from 'lucide-react';
 
 /* ─── Shared dark design tokens ─────────────────────────── */
 const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
@@ -12,7 +24,7 @@ const cardHover = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgb
 const CHAT_MESSAGES = [
   { id: 1, name: 'Sarah K.', color: '#00d4ff', time: '2m ago', text: 'This gradient descent explanation is so clear!' },
   { id: 2, name: 'David M.', color: '#f97316', time: '1m ago', text: 'Can you explain the learning rate again?' },
-  { id: 3, name: 'Amina T.', color: '#a855f7', time: 'just now', text: 'Love the visualizations 🔥' },
+  { id: 3, name: 'Amina T.', color: '#a855f7', time: 'just now', text: 'Love the visualizations', icon: <Flame size={14} className="text-orange-500 inline ml-1" /> },
 ];
 
 const MY_COURSES = [
@@ -107,8 +119,8 @@ export default function StudentDashboard() {
             <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 w-16 h-16 rounded-full flex items-center justify-center"
               style={{ background: 'rgba(0,212,255,0.15)', border: '1px solid rgba(0,212,255,0.4)', backdropFilter: 'blur(8px)' }}>
               {playing
-                ? <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-                : <svg width="20" height="20" fill="white" viewBox="0 0 24 24" className="ml-1"><path d="M8 5v14l11-7z"/></svg>
+                ? <Pause size={24} fill="white" />
+                : <Play size={24} fill="white" className="ml-1" />
               }
             </div>
           </button>
@@ -183,7 +195,10 @@ export default function StudentDashboard() {
                     <span className="text-xs font-semibold text-white/70">{msg.name}</span>
                     <span className="text-xs text-white/25">{msg.time}</span>
                   </div>
-                  <p className="text-sm text-white/55 leading-snug">{msg.text}</p>
+                  <p className="text-sm text-white/55 leading-snug">
+                    {msg.text}
+                    {msg.icon}
+                  </p>
                 </div>
               </div>
             ))}
@@ -206,7 +221,7 @@ export default function StudentDashboard() {
               <button onClick={sendMessage} disabled={!chatInput.trim()}
                 className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all disabled:opacity-30"
                 style={{ background: 'rgba(0,212,255,0.2)', border: '1px solid rgba(0,212,255,0.3)', color: '#00d4ff' }}>
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                <Send size={14} />
               </button>
             </div>
           </div>

@@ -6,18 +6,30 @@ import { useAuthStore } from '@/lib/store/auth.store';
 
 const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
 
+import { 
+  Users, 
+  BookOpen, 
+  CreditCard, 
+  TrendingUp,
+  Plus,
+  Bot,
+  Database,
+  Terminal,
+  BarChart3
+} from 'lucide-react';
+
 const STATS = [
-  { label: 'Total students', value: '248', delta: '+12 this month', accent: '#00d4ff' },
-  { label: 'Active courses', value: '6', delta: '2 in draft', accent: '#a855f7' },
-  { label: 'Revenue (KES)', value: '84,200', delta: '+18% vs last month', accent: '#f97316' },
-  { label: 'Avg. completion', value: '71%', delta: 'Up from 64%', accent: '#10b981' },
+  { label: 'Total students', value: '248', delta: '+12 this month', accent: '#00d4ff', icon: <Users size={16} /> },
+  { label: 'Active courses', value: '6', delta: '2 in draft', accent: '#a855f7', icon: <BookOpen size={16} /> },
+  { label: 'Revenue (KES)', value: '84,200', delta: '+18% vs last month', accent: '#f97316', icon: <CreditCard size={16} /> },
+  { label: 'Avg. completion', value: '71%', delta: 'Up from 64%', accent: '#10b981', icon: <TrendingUp size={16} /> },
 ];
 
 const COURSES = [
-  { title: 'Introduction to Machine Learning', students: 98, completion: 68, accent: '#00d4ff', status: 'PUBLISHED' },
-  { title: 'Python for Data Science', students: 74, completion: 81, accent: '#f97316', status: 'PUBLISHED' },
-  { title: 'SQL Mastery', students: 62, completion: 55, accent: '#a855f7', status: 'PUBLISHED' },
-  { title: 'Data Visualisation with Python', students: 14, completion: 40, accent: '#6b7280', status: 'DRAFT' },
+  { title: 'Introduction to Machine Learning', students: 98, completion: 68, accent: '#00d4ff', status: 'PUBLISHED', icon: <Bot size={20} /> },
+  { title: 'Python for Data Science', students: 74, completion: 81, accent: '#f97316', status: 'PUBLISHED', icon: <Terminal size={20} /> },
+  { title: 'SQL Mastery', students: 62, completion: 55, accent: '#a855f7', status: 'PUBLISHED', icon: <Database size={20} /> },
+  { title: 'Data Visualisation with Python', students: 14, completion: 40, accent: '#6b7280', status: 'DRAFT', icon: <BarChart3 size={20} /> },
 ];
 
 const ENROLLMENTS = [
@@ -43,7 +55,11 @@ export default function InstructorDashboard() {
         {STATS.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="p-5 rounded-2xl" style={card}>
-            <div className="w-2 h-2 rounded-full mb-4" style={{ background: s.accent, boxShadow: `0 0 8px ${s.accent}` }} />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${s.accent}15`, color: s.accent }}>
+                {s.icon}
+              </div>
+            </div>
             <div className="text-2xl font-extrabold text-white">{s.value}</div>
             <div className="text-xs text-white/35 mt-0.5">{s.label}</div>
             <div className="text-xs mt-2 font-medium" style={{ color: s.accent }}>{s.delta}</div>
@@ -65,8 +81,9 @@ export default function InstructorDashboard() {
                 style={{ borderBottom: i < COURSES.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
-                <div className="w-10 h-10 rounded-xl flex-shrink-0" style={{ background: `${c.accent}20`, border: `1px solid ${c.accent}30` }}>
-                  <div className="w-full h-full rounded-xl flex items-center justify-center text-lg">{['🤖','🐍','🗄️','📊'][i]}</div>
+                <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center" 
+                  style={{ background: `${c.accent}15`, border: `1px solid ${c.accent}25`, color: c.accent }}>
+                  {c.icon}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/75 truncate">{c.title}</p>

@@ -43,6 +43,33 @@ export class CoursesService {
     return { courses, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
+  async findAllAdmin(page = 1, limit = 20, search?: string) {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [courses, total] = await Promise.all([
+      this.prisma.course.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          instructor: { select: { id: true, name: true, email: true } },
+          _count: { select: { enrollments: true, sections: true } },
+        },
+      }),
+      this.prisma.course.count({ where }),
+    ]);
+
+    return { courses, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   async findByInstructor(instructorId: string) {
     return this.prisma.course.findMany({
       where: { instructorId },
@@ -126,6 +153,29 @@ export class CoursesService {
     return this.prisma.section.create({ data: { ...dto, courseId } });
   }
 
+  async findInstructorStudents(instructorId: string) {
+    const enrollments = await this.prisma.enrollment.findMany({
+      where: {
+        course: { instructorId },
+      },
+      include: {
+        student: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        course: { select: { title: true } },
+      },
+      orderBy: { enrolledAt: 'desc' },
+    });
+
+    return enrollments.map(e => ({
+      id: (e as any).student.id,
+      name: (e as any).student.name,
+      email: (e as any).student.email,
+      avatarUrl: (e as any).student.avatarUrl,
+      enrolledAt: e.enrolledAt,
+      courseTitle: (e as any).course.title,
+      progress: e.progress,
+    }));
+  }
+
   async enrollStudent(courseId: string, studentId: string) {
     const course = await this.prisma.course.findUnique({ where: { id: courseId } });
     if (!course) throw new NotFoundException('Course not found');
@@ -137,7 +187,7 @@ export class CoursesService {
       return { message: 'Already enrolled', enrollment: existing };
     }
 
-    if (course.price && course.price > 0) {
+    if (course.price && Number(course.price) > 0) {
       throw new ForbiddenException('This course requires payment. Use the payment flow to enroll.');
     }
 

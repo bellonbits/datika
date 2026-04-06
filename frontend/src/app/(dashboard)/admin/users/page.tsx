@@ -2,8 +2,18 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
+import { 
+  User as UserIcon, 
+  Search, 
+  Shield, 
+  ShieldAlert, 
+  UserX, 
+  UserCheck, 
+  Users,
+  MoreVertical 
+} from 'lucide-react';
 
 const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20 };
 
@@ -26,10 +36,19 @@ interface User {
 export default function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('All');
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-users'],
     queryFn: () => apiClient.get('/users') as Promise<{ users: User[]; total: number }>,
+  });
+
+  const toggleStatus = useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) => 
+      apiClient.patch(`/users/${id}/${active ? 'deactivate' : 'activate'}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
   });
 
   const users: User[] = (data as unknown as { users: User[] })?.users ?? [];
@@ -51,23 +70,26 @@ export default function AdminUsersPage() {
   return (
     <div className="p-6 h-full overflow-auto text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <h1 className="text-2xl font-extrabold text-white mb-1">Users</h1>
-        <p className="text-white/40 text-sm">Manage all user accounts on the platform</p>
+        <h1 className="text-2xl font-extrabold text-white mb-1">User Management</h1>
+        <p className="text-white/40 text-sm">Control access and roles across the platform</p>
       </motion.div>
 
       {/* Stats */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
         className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Total Users', value: isLoading ? '—' : stats.total, accent: '#00d4ff' },
-          { label: 'Students', value: isLoading ? '—' : stats.students, accent: '#10b981' },
-          { label: 'Instructors', value: isLoading ? '—' : stats.instructors, accent: '#f97316' },
-          { label: 'Active', value: isLoading ? '—' : stats.active, accent: '#a855f7' },
+          { label: 'Total Users', value: isLoading ? '—' : stats.total, accent: '#00d4ff', icon: <Users size={16} /> },
+          { label: 'Learners', value: isLoading ? '—' : stats.students, accent: '#10b981', icon: <UserIcon size={16} /> },
+          { label: 'Instructors', value: isLoading ? '—' : stats.instructors, accent: '#f97316', icon: <Shield size={16} /> },
+          { label: 'Active Keys', value: isLoading ? '—' : stats.active, accent: '#a855f7', icon: <ShieldAlert size={16} /> },
         ].map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.05 }}
             className="p-4 rounded-2xl" style={card}>
+            <div className="flex items-center justify-between mb-2">
+               <div className="p-1.5 rounded-lg" style={{ background: `${s.accent}15`, color: s.accent }}>{s.icon}</div>
+            </div>
             <p className="text-2xl font-extrabold mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-white/40 text-xs">{s.label}</p>
+            <p className="text-white/40 text-xs uppercase tracking-tight">{s.label}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -75,9 +97,7 @@ export default function AdminUsersPage() {
       {/* Filters */}
       <div className="flex items-center gap-3 mb-5">
         <div className="relative flex-1 max-w-xs">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
-          </svg>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" size={14} />
           <input value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search users..."
             className="w-full h-9 pl-9 pr-3 rounded-xl text-sm text-white placeholder:text-white/25 outline-none"
@@ -120,12 +140,13 @@ export default function AdminUsersPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
           className="rounded-2xl overflow-hidden" style={card}>
           {/* Table header */}
-          <div className="grid grid-cols-5 px-5 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider"
+          <div className="grid grid-cols-6 px-5 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider"
             style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
             <span className="col-span-2">User</span>
             <span>Role</span>
             <span>Status</span>
             <span>Joined</span>
+            <span className="text-right">Actions</span>
           </div>
 
           {filtered.length === 0 && (
@@ -136,7 +157,7 @@ export default function AdminUsersPage() {
             const roleColor = ROLE_COLOR[u.role] ?? '#6b7280';
             const joined = new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             return (
-              <div key={u.id} className="grid grid-cols-5 items-center px-5 py-3.5 transition-all"
+              <div key={u.id} className="grid grid-cols-6 items-center px-5 py-3.5 transition-all"
                 style={{ borderBottom: i < filtered.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
@@ -154,10 +175,20 @@ export default function AdminUsersPage() {
                   style={{ background: `${roleColor}12`, color: roleColor, border: `1px solid ${roleColor}20` }}>
                   {u.role.charAt(0) + u.role.slice(1).toLowerCase()}
                 </span>
-                <span className="text-xs font-medium" style={{ color: u.isActive ? '#10b981' : '#6b7280' }}>
+                <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: u.isActive ? '#10b981' : '#ef4444' }}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
                   {u.isActive ? 'Active' : 'Inactive'}
                 </span>
                 <span className="text-white/30 text-xs">{joined}</span>
+                <div className="text-right">
+                   <button 
+                     onClick={() => toggleStatus.mutate({ id: u.id, active: u.isActive })}
+                     disabled={toggleStatus.isPending || u.role === 'ADMIN'}
+                     className="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-white/40 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                   >
+                     {u.isActive ? <UserX size={14} /> : <UserCheck size={14} />}
+                   </button>
+                </div>
               </div>
             );
           })}
