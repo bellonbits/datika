@@ -115,7 +115,7 @@ export default function InstructorCoursesPage() {
               <motion.div key={course.id}
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }}
                 className="p-5 rounded-2xl cursor-pointer transition-all" style={card}
-                onClick={() => router.push(`/courses/${course.id}`)}
+                onClick={() => router.push(`/instructor/courses/${course.id}/manage`)}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}>
                 <div className="flex items-start justify-between gap-4">

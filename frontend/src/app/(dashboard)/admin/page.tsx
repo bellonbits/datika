@@ -217,7 +217,7 @@ export default function AdminDashboard() {
 
       {/* Admin Action: Create Course */}
       <div className="flex justify-end">
-        <button onClick={() => router.push('/instructor/courses/new')}
+        <button onClick={() => router.push('/admin/courses/new')}
            className="h-12 px-6 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-[#070b16] font-bold flex items-center gap-2 transform transition-all active:scale-95 shadow-lg shadow-cyan-500/20">
            <Plus size={20} />
            Create Platform Course

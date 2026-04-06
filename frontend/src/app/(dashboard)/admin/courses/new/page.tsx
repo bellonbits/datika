@@ -18,7 +18,8 @@ import {
   ArrowRight,
   BookOpen,
   Layers,
-  Zap
+  Zap,
+  Shield
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 import { aiApi } from '@/lib/api/ai.api';
@@ -38,7 +39,7 @@ const glassStyle = {
   borderRadius: 32,
 };
 
-export default function MagicCreateCoursePage() {
+export default function AdminMagicCreateCoursePage() {
   const router = useRouter();
   const [step, setStep] = useState<'input' | 'generating' | 'review'>('input');
   const [aiBlueprint, setAiBlueprint] = useState<any | null>(null);
@@ -49,7 +50,6 @@ export default function MagicCreateCoursePage() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<MagicFormValues>({
     resolver: zodResolver(magicSchema),
     defaultValues: {
@@ -82,8 +82,9 @@ export default function MagicCreateCoursePage() {
     setIsSubmitting(true);
     setError(null);
     try {
+      // Admins create courses directly
       const response = await apiClient.post('/courses/ai-bulk', aiBlueprint) as { id: string };
-      router.push(`/instructor/courses/${response.id}`);
+      router.push(`/admin/courses/${response.id}`);
     } catch (err: any) {
       setError('Failed to manifest the course. Please try again.');
       setIsSubmitting(false);
@@ -91,7 +92,7 @@ export default function MagicCreateCoursePage() {
   };
 
   return (
-    <div className="min-h-full p-6 flex flex-col items-center justify-center text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="min-h-full p-6 flex flex-col items-center justify-center text-white font-[Inter,sans-serif]">
       <AnimatePresence mode="wait">
         {step === 'input' && (
           <motion.div 
@@ -103,24 +104,24 @@ export default function MagicCreateCoursePage() {
             style={glassStyle}
           >
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
-                <Sparkles size={24} />
+              <div className="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-400">
+                <Shield size={24} />
               </div>
               <div>
-                <h1 className="text-2xl font-black tracking-tight">AI Course Architect</h1>
-                <p className="text-white/40 text-sm font-medium">Manifest your knowledge into a professional course</p>
+                <h1 className="text-2xl font-black tracking-tight">Platform Content Architect</h1>
+                <p className="text-white/40 text-sm font-medium italic">Admin Authority Mode</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Course Name</label>
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Curated Course Name</label>
                 <div className="relative group">
-                  <Layout className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-cyan-400 transition-colors" size={20} />
+                  <Layout className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-orange-400 transition-colors" size={20} />
                   <input
                     {...register('title')}
-                    placeholder="e.g. Master Class in Product Strategy"
-                    className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-base font-semibold"
+                    placeholder="e.g. Official Datika Mastery Path"
+                    className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 text-base font-semibold"
                   />
                   {errors.title && <p className="text-xs text-red-400 mt-1.5 px-1">{errors.title.message}</p>}
                 </div>
@@ -128,27 +129,27 @@ export default function MagicCreateCoursePage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Target Duration</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Platform Duration</label>
                   <div className="relative group">
-                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-cyan-400 transition-colors" size={20} />
+                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-orange-400 transition-colors" size={20} />
                     <input
                       {...register('duration')}
-                      placeholder="e.g. 8 Weeks"
-                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-semibold"
+                      placeholder="e.g. 12 Weeks"
+                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 text-sm font-semibold"
                     />
                     {errors.duration && <p className="text-xs text-red-400 mt-1.5 px-1">{errors.duration.message}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Amount (KES)</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-1">Public Amount (KES)</label>
                   <div className="relative group">
-                    <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-cyan-400 transition-colors" size={20} />
+                    <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-orange-400 transition-colors" size={20} />
                     <input
                       type="number"
                       {...register('price', { valueAsNumber: true })}
-                      placeholder="4999"
-                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-bold"
+                      placeholder="9999"
+                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -157,9 +158,9 @@ export default function MagicCreateCoursePage() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full h-14 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-sm uppercase tracking-widest transition-all shadow-2xl shadow-cyan-500/20 flex items-center justify-center gap-3 group"
+                  className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 text-white font-black text-sm uppercase tracking-widest transition-all shadow-2xl shadow-orange-500/20 flex items-center justify-center gap-3 group"
                 >
-                  Generate Course Blueprint
+                  Architect Platform Draft
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -186,15 +187,15 @@ export default function MagicCreateCoursePage() {
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="w-32 h-32 rounded-full border-4 border-cyan-500/10 border-t-cyan-500 shadow-[0_0_40px_rgba(6,182,212,0.2)]"
+                className="w-32 h-32 rounded-full border-4 border-orange-500/10 border-t-orange-500 shadow-[0_0_40px_rgba(249,115,22,0.2)]"
               />
-              <div className="absolute inset-0 flex items-center justify-center text-cyan-400">
-                 <Sparkles size={40} className="animate-pulse" />
+              <div className="absolute inset-0 flex items-center justify-center text-orange-400">
+                 <Shield size={40} className="animate-pulse" />
               </div>
             </div>
             <div className="text-center">
-              <h2 className="text-3xl font-black tracking-tight mb-2">Manifesting Content...</h2>
-              <p className="text-white/30 font-medium">Consulting the AI knowledge base to architect your curriculum</p>
+              <h2 className="text-3xl font-black tracking-tight mb-2 text-orange-100">Manifesting Global Content...</h2>
+              <p className="text-white/30 font-medium tracking-wide">Synthesizing platform syllabus and standards</p>
             </div>
           </motion.div>
         )}
@@ -211,30 +212,29 @@ export default function MagicCreateCoursePage() {
                 onClick={() => setStep('input')}
                 className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
               >
-                <ChevronLeft size={16} /> Back to Inputs
+                <ChevronLeft size={16} /> Re-Edit Core
               </button>
-              <div className="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest">
-                Blueprint Ready
+              <div className="px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest">
+                Platform Blueprint Manifested
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-hidden">
-              {/* Sidebar: Metadata */}
               <div className="lg:col-span-1 space-y-6 overflow-y-auto pr-2 custom-scrollbar">
                 <div className="p-8" style={glassStyle}>
-                  <div className="text-purple-400 mb-4 px-1"><Zap size={20} /></div>
+                  <div className="text-orange-400 mb-4 px-1"><Sparkles size={20} /></div>
                   <h3 className="text-lg font-black leading-tight mb-4">{aiBlueprint.title}</h3>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-white/40 text-xs font-bold uppercase tracking-widest">
-                       <Clock size={14} className="text-cyan-500" />
+                       <Clock size={14} className="text-orange-500" />
                        {aiBlueprint.duration}
                     </div>
                     <div className="flex items-center gap-3 text-white/40 text-xs font-bold uppercase tracking-widest">
-                       <Layers size={14} className="text-purple-500" />
+                       <Layers size={14} className="text-blue-500" />
                        {aiBlueprint.category}
                     </div>
                     <div className="flex items-center gap-3 text-white/40 text-xs font-bold uppercase tracking-widest">
-                       <BookOpen size={14} className="text-orange-500" />
+                       <BookOpen size={14} className="text-emerald-500" />
                        {aiBlueprint.level}
                     </div>
                   </div>
@@ -247,17 +247,16 @@ export default function MagicCreateCoursePage() {
                 <button
                   onClick={finalizeCreation}
                   disabled={isSubmitting}
-                  className="w-full h-14 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-[#070b16] font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full h-14 rounded-2xl bg-orange-500 hover:bg-orange-400 text-[#070b16] font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-orange-500/20 flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <CheckCircle2 size={20} />}
-                  Complete Manifestation
+                  Begin Global Manifestation
                 </button>
               </div>
 
-              {/* Main: Curriculum Blueprint */}
               <div className="lg:col-span-2 overflow-y-auto pr-2 custom-scrollbar space-y-4">
                 <div className="flex items-center gap-2 px-2 text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
-                   <Layers size={14} /> AI Curriculum Structure
+                   <Shield size={14} /> Official Platform Structure
                 </div>
                 {aiBlueprint.sections?.map((section: any, sIdx: number) => (
                   <motion.div 
@@ -275,9 +274,9 @@ export default function MagicCreateCoursePage() {
                     </div>
                     <div className="space-y-2 pl-12">
                       {section.lessons?.map((lesson: any, lIdx: number) => (
-                        <div key={lIdx} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between group hover:border-cyan-500/20 transition-colors">
+                        <div key={lIdx} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between group hover:border-orange-500/20 transition-colors">
                           <div className="flex items-center gap-3">
-                             <div className={`p-1.5 rounded-lg ${lesson.type === 'VIDEO' ? 'bg-orange-500/10 text-orange-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                             <div className={`p-1.5 rounded-lg ${lesson.type === 'VIDEO' ? 'bg-orange-500/10 text-orange-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
                                 {lesson.type === 'VIDEO' ? <Zap size={12} /> : <BookOpen size={12} />}
                              </div>
                              <span className="text-xs font-bold text-white/50 group-hover:text-white/80 transition-colors">{lesson.title}</span>
@@ -295,16 +294,9 @@ export default function MagicCreateCoursePage() {
       </AnimatePresence>
 
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
       `}</style>
     </div>
   );

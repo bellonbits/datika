@@ -45,7 +45,7 @@ export default function AdminCoursesPage() {
           <p className="text-white/40 text-sm">Monitor and moderate all educational content on the platform</p>
         </div>
         <button 
-          onClick={() => router.push('/instructor/courses/new')}
+          onClick={() => router.push('/admin/courses/new')}
           className="h-10 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-[#070b16] text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/10">
           <Plus size={16} />
           Create Platform Course
@@ -89,7 +89,7 @@ export default function AdminCoursesPage() {
           </div>
           <p className="text-white/40 text-sm mb-6">No courses found on the platform.</p>
           <button 
-            onClick={() => router.push('/instructor/courses/new')}
+            onClick={() => router.push('/admin/courses/new')}
             className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">
             Start Building Catalog
           </button>
@@ -101,7 +101,7 @@ export default function AdminCoursesPage() {
           <motion.div key={c.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
             className="p-5 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all cursor-pointer" 
             style={card}
-            onClick={() => router.push(`/courses/${c.id}`)}>
+            onClick={() => router.push(`/admin/courses/${c.id}`)}>
             
             {/* Status gradient */}
             <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl opacity-5 pointer-events-none ${

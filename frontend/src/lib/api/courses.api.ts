@@ -21,6 +21,21 @@ export const coursesApi = {
 
   createSection: (courseId: string, data: { title: string; order: number }) =>
     apiClient.post(`/courses/${courseId}/sections`, data),
+
+  updateSection: (sectionId: string, data: { title?: string; order?: number }) =>
+    apiClient.patch(`/sections/${sectionId}`, data),
+
+  deleteSection: (sectionId: string) =>
+    apiClient.delete(`/sections/${sectionId}`),
+
+  createLesson: (sectionId: string, data: Record<string, unknown>) =>
+    apiClient.post(`/lessons/section/${sectionId}`, data),
+
+  updateLesson: (lessonId: string, data: Record<string, unknown>) =>
+    apiClient.patch(`/lessons/${lessonId}`, data),
+
+  deleteLesson: (lessonId: string) =>
+    apiClient.delete(`/lessons/${lessonId}`),
 };
 
 export const enrollmentsApi = {

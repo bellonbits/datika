@@ -102,6 +102,7 @@ export default function InstructorDashboard() {
             {!coursesLoading && courses.length === 0 && <p className="p-5 text-white/20">No courses yet.</p>}
             {courses.map((c, i) => (
               <div key={c.id} className="flex items-center gap-4 px-5 py-3.5 transition-all cursor-pointer"
+                onClick={() => router.push(`/instructor/courses/${c.id}`)}
                 style={{ borderBottom: i < courses.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
@@ -150,7 +151,7 @@ export default function InstructorDashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/70 truncate">{e.name}</p>
-                  <p className="text-xs text-white/30 truncate">{e.courseTitle}</p>
+                  <h1 className="text-2xl font-black tracking-tight">Datika AI Architect</h1>
                 </div>
                 <span className="text-xs text-white/25">Recently</span>
               </div>

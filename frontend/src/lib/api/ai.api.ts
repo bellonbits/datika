@@ -42,4 +42,8 @@ export const aiApi = {
 
   getChatSessions: () => apiClient.get('/ai/chat/sessions'),
   getChatSession: (id: string) => apiClient.get(`/ai/chat/sessions/${id}`),
+  
+  // Course
+  generateCourseMetadata: (data: { prompt: string; duration?: string; amount?: number; context?: string }) =>
+    apiClient.post('/ai/course/generate', data),
 };
