@@ -8,7 +8,9 @@ import { GradingService } from './grading/grading.service';
 import { ChatService } from './chat/chat.service';
 import {
   GenerateNotesDto, GenerateQuizDto, GradeSubmissionDto, ChatMessageDto, GenerateAssignmentDto,
+  GenerateCourseDto,
 } from './dto/ai.dto';
+import { AiCourseService } from './course/ai-course.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -24,6 +26,7 @@ export class AiController {
     private readonly quizService: QuizService,
     private readonly gradingService: GradingService,
     private readonly chatService: ChatService,
+    private readonly aiCourseService: AiCourseService,
   ) {}
 
   // ─── Notes ──────────────────────────────────────────────────────────────────
@@ -105,5 +108,15 @@ export class AiController {
     @CurrentUser() user: { id: string },
   ) {
     return this.chatService.getSession(sessionId, user.id);
+  }
+
+  // ─── Course ─────────────────────────────────────────────────────────────────
+
+  @Post('course/generate')
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @Throttle({ medium: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Generate course metadata (Instructor/Admin)' })
+  generateCourseMetadata(@Body() dto: GenerateCourseDto) {
+    return this.aiCourseService.generateMetadata(dto);
   }
 }

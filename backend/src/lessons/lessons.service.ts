@@ -1,20 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { LessonType, Role } from '@prisma/client';
-
-export class CreateLessonDto {
-  title: string;
-  type: LessonType;
-  order: number;
-  content?: string;
-  videoUrl?: string;
-  fileUrl?: string;
-  duration?: number;
-  isPreview?: boolean;
-  aiNotesId?: string;
-  quizId?: string;
-  assignmentId?: string;
-}
+import { Role } from '@prisma/client';
+import { CreateLessonDto, UpdateLessonDto } from './dto/lesson.dto';
 
 @Injectable()
 export class LessonsService {
@@ -60,7 +47,7 @@ export class LessonsService {
     return lesson;
   }
 
-  async updateLesson(lessonId: string, dto: Partial<CreateLessonDto>, userId: string, role: Role) {
+  async updateLesson(lessonId: string, dto: UpdateLessonDto, userId: string, role: Role) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
       include: { section: { include: { course: true } } },

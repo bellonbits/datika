@@ -22,6 +22,7 @@ export class CoursesService {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
         { tags: { has: search } },
       ];
     }

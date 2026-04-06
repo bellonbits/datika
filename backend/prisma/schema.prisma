@@ -141,6 +141,7 @@ model Course {
   currency     String      @default("KES")
   level        CourseLevel @default(BEGINNER)
   status       CourseStatus @default(DRAFT)
+  category     String?
   tags         String[]
   instructorId String
   createdAt    DateTime    @default(now())

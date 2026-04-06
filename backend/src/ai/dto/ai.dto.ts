@@ -115,3 +115,14 @@ export class ChatMessageDto {
   @IsOptional()
   courseContext?: string;
 }
+
+export class GenerateCourseDto {
+  @ApiProperty({ example: 'Advanced React patterns' })
+  @IsString()
+  prompt: string;
+
+  @ApiPropertyOptional({ example: 'A deep dive into hooks, suspense, and performance' })
+  @IsString()
+  @IsOptional()
+  context?: string;
+}

@@ -20,6 +20,11 @@ export class CreateCourseDto {
   @IsOptional()
   level?: CourseLevel;
 
+  @ApiPropertyOptional({ example: 'Computer Science' })
+  @IsString()
+  @IsOptional()
+  category?: string;
+
   @ApiPropertyOptional({ example: 4999 })
   @IsNumber()
   @Min(0)
@@ -53,6 +58,11 @@ export class UpdateCourseDto {
   @IsEnum(CourseLevel)
   @IsOptional()
   level?: CourseLevel;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  category?: string;
 
   @ApiPropertyOptional({ enum: CourseStatus })
   @IsEnum(CourseStatus)
