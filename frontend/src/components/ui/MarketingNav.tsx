@@ -135,9 +135,9 @@ export default function MarketingNav() {
             {[{ icon: <FacebookIcon />, label: 'Facebook' }, { icon: <YoutubeIcon />, label: 'YouTube' }, { icon: <TwitterIcon />, label: 'Twitter' }].map(({ icon, label }) => (
               <button key={label} aria-label={label}
                 className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                style={{ color: 'rgba(255,255,255,0.55)', background: 'transparent', border: 'none' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent'; }}>
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; e.currentTarget.style.background = 'transparent'; }}>
                 {icon}
               </button>
             ))}
@@ -147,7 +147,7 @@ export default function MarketingNav() {
 
           <Link href="/login">
             <button className="hidden sm:flex h-9 px-4 rounded-xl text-sm font-medium transition-all"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
+              style={{ color: 'rgba(255,255,255,0.65)', background: 'transparent', border: 'none' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; e.currentTarget.style.background = 'transparent'; }}>
               Sign in
