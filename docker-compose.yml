@@ -93,7 +93,6 @@ services:
       # Browser calls the backend via the host's IP/hostname — not the internal Docker network name
       NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
       NODE_ENV: production
-    env_file: ./frontend/.env
     ports:
       - '3000:3000'
 
