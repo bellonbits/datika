@@ -8,6 +8,7 @@ RUN npm ci --ignore-scripts
 
 # Build — full source available, run generate + compile
 FROM base AS builder
+RUN apk add --no-cache openssl
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
@@ -16,6 +17,8 @@ RUN npm run build
 # Production
 FROM base AS runner
 ENV NODE_ENV=production
+# OpenSSL is required by the Prisma query engine on Alpine
+RUN apk add --no-cache openssl
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
