@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "Running database migrations..."
-npx prisma migrate deploy
+echo "Pushing database schema..."
+npx prisma db push --skip-generate
 
 echo "Seeding admin user..."
 node -e "
@@ -29,7 +29,8 @@ async function seed() {
 }
 
 seed().catch(console.error).finally(() => prisma.\$disconnect());
-"
+" || echo "Seed warning (non-fatal)"
 
 echo "Starting server..."
+# nest build outputs to dist/main.js (sourceRoot=src)
 exec node dist/main
