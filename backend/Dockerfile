@@ -1,12 +1,12 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Dependencies
+# Dependencies — skip postinstall (prisma generate) since schema isn't here yet
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
-# Build
+# Build — full source available, run generate + compile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
