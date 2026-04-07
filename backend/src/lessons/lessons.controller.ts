@@ -1,7 +1,8 @@
 import { Controller, Post, Get, Patch, Body, Param, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { LessonsService, CreateLessonDto } from './lessons.service';
+import { LessonsService } from './lessons.service';
+import { CreateLessonDto } from './dto/lesson.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
