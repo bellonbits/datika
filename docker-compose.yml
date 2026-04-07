@@ -90,7 +90,8 @@ services:
     depends_on:
       - backend
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:3001/api/v1
+      # Browser calls the backend via the host's IP/hostname — not the internal Docker network name
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
       NODE_ENV: production
     env_file: ./frontend/.env
     ports:

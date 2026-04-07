@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Required for Docker standalone output
+  output: 'standalone',
+
   // Required for Ant Design 5.x to work with Next.js App Router
   transpilePackages: ['antd', '@ant-design/icons', '@ant-design/cssinjs'],
 
