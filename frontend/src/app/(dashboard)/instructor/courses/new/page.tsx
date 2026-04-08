@@ -121,7 +121,7 @@ export default function MagicCreateCoursePage() {
                   <input
                     {...register('title')}
                     placeholder="e.g. Master Class in Product Strategy"
-                    className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-base font-semibold"
+                    className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-base font-semibold text-white"
                   />
                   {errors.title && <p className="text-xs text-red-400 mt-1.5 px-1">{errors.title.message}</p>}
                 </div>
@@ -135,7 +135,7 @@ export default function MagicCreateCoursePage() {
                     <input
                       {...register('duration')}
                       placeholder="e.g. 8 Weeks"
-                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-semibold"
+                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-semibold text-white"
                     />
                     {errors.duration && <p className="text-xs text-red-400 mt-1.5 px-1">{errors.duration.message}</p>}
                   </div>
@@ -149,7 +149,7 @@ export default function MagicCreateCoursePage() {
                       type="number"
                       {...register('price', { valueAsNumber: true })}
                       placeholder="4999"
-                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-bold"
+                      className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 text-sm font-bold text-white"
                     />
                   </div>
                 </div>

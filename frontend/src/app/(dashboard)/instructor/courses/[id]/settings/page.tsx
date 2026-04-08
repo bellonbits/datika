@@ -164,7 +164,7 @@ export default function CourseSettingsPage() {
                         <Layout className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10" size={18} />
                         <input
                           {...register('title')}
-                          className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold"
+                          className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold text-white"
                         />
                      </div>
                      {errors.title && <p className="text-xs text-red-400/80 mt-1">{errors.title.message}</p>}
@@ -175,7 +175,7 @@ export default function CourseSettingsPage() {
                      <textarea
                        {...register('description')}
                        rows={6}
-                       className="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-medium leading-relaxed resize-none"
+                       className="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-medium leading-relaxed resize-none text-white"
                      />
                      {errors.description && <p className="text-xs text-red-400/80 mt-1">{errors.description.message}</p>}
                    </div>
@@ -191,7 +191,7 @@ export default function CourseSettingsPage() {
                         <label className="text-[10px] font-black text-white/20 uppercase tracking-widest px-1">Category</label>
                         <input
                           {...register('category')}
-                          className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold"
+                          className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold text-white"
                         />
                       </div>
 
@@ -227,7 +227,7 @@ export default function CourseSettingsPage() {
                            <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10" size={18} />
                            <input
                              {...register('duration')}
-                             className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold"
+                             className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-cyan-500/50 text-sm font-semibold text-white"
                            />
                         </div>
                       </div>
@@ -239,7 +239,7 @@ export default function CourseSettingsPage() {
                            <input
                              type="number"
                              {...register('price', { valueAsNumber: true })}
-                             className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-orange-500/50 text-sm font-black"
+                             className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/5 border border-white/10 outline-none transition-all focus:border-orange-500/50 text-sm font-black text-white"
                            />
                         </div>
                       </div>

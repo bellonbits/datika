@@ -12,7 +12,8 @@ import {
   Settings, 
   LogOut, 
   Users,
-  GraduationCap
+  GraduationCap,
+  ChevronLeft
 } from 'lucide-react';
 import { useAuthStore } from '@/lib/store/auth.store';
 import DatikaLogo from '@/components/ui/DatikaLogo';
@@ -56,6 +57,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const nav = user.role === 'ADMIN' ? adminNav : user.role === 'INSTRUCTOR' ? instructorNav : studentNav;
 
+  const isRootPath = ['/admin', '/instructor', '/student'].includes(pathname);
+  const showBack = !isRootPath && pathname !== '/';
+
   return (
     <div
       className="flex h-screen overflow-hidden"
@@ -74,9 +78,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)' }} />
 
         {/* Logo mark */}
-        <div className="relative mb-8 flex-shrink-0">
+        <div className="relative mb-6 flex-shrink-0">
           <DatikaLogo size={34} showText={false} />
         </div>
+
+        {/* Smart Back Button */}
+        <AnimatePresence>
+          {showBack && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="mb-4"
+            >
+              <Tooltip title="Go Back" placement="right">
+                <button
+                  onClick={() => router.back()}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+              </Tooltip>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="w-8 h-px mb-6" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
         {/* Nav */}
         <nav className="flex flex-col items-center gap-1.5 flex-1">

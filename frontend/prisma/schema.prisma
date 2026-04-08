@@ -93,6 +93,9 @@ model User {
   email           String   @unique
   name            String
   avatarUrl       String?
+  bio             String?
+  phone           String?
+  country         String?
   passwordHash    String?
   googleId        String?  @unique
   role            Role     @default(STUDENT)

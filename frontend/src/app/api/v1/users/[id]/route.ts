@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (auth.sub !== params.id && auth.role !== 'ADMIN') return forbidden();
   try {
     const body = await req.json();
-    const allowed = ['name', 'avatarUrl'] as const;
+    const allowed = ['name', 'avatarUrl', 'bio', 'phone', 'country'] as const;
     const data: Record<string, unknown> = {};
     for (const key of allowed) {
       if (key in body) data[key] = body[key];

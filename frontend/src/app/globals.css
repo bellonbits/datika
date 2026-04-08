@@ -40,6 +40,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input, textarea, select {
+  color: white;
+  background: transparent;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 /* ─── Dark scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }

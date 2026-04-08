@@ -74,8 +74,8 @@ export default function AdminDashboard() {
     { label: 'Enrollments', value: isLoadingCourseStats ? null : cStats?.totalEnrollments, delta: 'Total platform', accent: '#10b981', icon: <ClipboardList size={24} /> },
   ];
 
-  const recentUsers: User[] = (recentUsersData as any)?.data?.users ?? [];
-  const recentPayments: Payment[] = (revenueData as any)?.data?.recentPayments ?? [];
+  const recentUsers: User[] = (recentUsersData as any)?.users ?? [];
+  const recentPayments: Payment[] = (revenueData as any)?.recentPayments ?? [];
 
   return (
     <div className="p-6 space-y-5 text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>

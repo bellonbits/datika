@@ -44,7 +44,7 @@ export default function AdminRevenuePage() {
     }>,
   });
 
-  const revenue = data;
+  const revenue = (data as any)?.data;
   const payments = revenue?.recentPayments ?? [];
 
   return (
@@ -128,7 +128,7 @@ export default function AdminRevenuePage() {
             </div>
           )}
 
-          {!isLoading && payments.map((p, i) => {
+          {!isLoading && payments.map((p: Payment, i: number) => {
             const statusColor = STATUS_COLOR[p.status] ?? '#6b7280';
             const date = new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             return (
