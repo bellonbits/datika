@@ -65,7 +65,8 @@ export default function AdminCourseSettingsPage() {
 
   const fetchCourse = async () => {
     try {
-      const data = (await apiClient.get(`/courses/${id}`)) as any;
+      const _res = (await apiClient.get(`/courses/${id}`)) as any;
+      const data = _res?.data ?? _res;
       reset({
         title: data.title,
         description: data.description,

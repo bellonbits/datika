@@ -53,9 +53,16 @@ export async function POST(req: NextRequest) {
 
     if (!title || title.length < 3) return err('Title is required (min 3 chars)', 400);
 
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      + '-' + Date.now();
+
     const course = await prisma.course.create({
       data: {
         title,
+        slug,
         description: description ?? '',
         category: category ?? 'General',
         level: level ?? 'BEGINNER',

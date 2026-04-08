@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const pkg = require\\('/Users/mac/datika/frontend/node_modules/lucide-react/dist/lucide-react.js'\\); console.log\\('Terminal:', !!pkg.Terminal, 'Database:', !!pkg.Database, 'BarChart3:', !!pkg.BarChart3\\);\")"
+    ]
+  }
+}

@@ -68,7 +68,8 @@ export default function CourseSettingsPage() {
 
   const fetchCourse = async () => {
     try {
-      const data = await apiClient.get(`/courses/${id}`);
+      const res = await apiClient.get(`/courses/${id}`) as any;
+      const data = res?.data ?? res;
       reset({
         title: data.title,
         description: data.description,

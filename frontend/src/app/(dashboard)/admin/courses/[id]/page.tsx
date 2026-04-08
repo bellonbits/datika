@@ -46,7 +46,8 @@ export default function AdminCourseManagementPage() {
     try {
       // Using the admin route to fetch course details directly if needed, 
       // but the public/shared get course logic works here assuming admin auth interceptors.
-      const data = await apiClient.get(`/courses/${id}`);
+      const _res = await apiClient.get(`/courses/${id}`) as any;
+      const data = _res?.data ?? _res;
       setCourse(data);
     } catch (err: any) {
       setError('Failed to load course details.');

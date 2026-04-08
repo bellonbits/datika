@@ -46,7 +46,8 @@ export default function CurriculumEditorPage() {
 
   const fetchCourse = async () => {
     try {
-      const data = await apiClient.get(`/courses/${id}`);
+      const _res = await apiClient.get(`/courses/${id}`) as any;
+      const data = _res?.data ?? _res;
       setCourse(data);
     } catch (err: any) {
       setError('Failed to load curriculum.');

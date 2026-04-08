@@ -15,9 +15,16 @@ export async function POST(req: NextRequest) {
 
     // Create course with sections and lessons in a transaction
     const course = await prisma.$transaction(async (tx) => {
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        + '-' + Date.now();
+
       const newCourse = await tx.course.create({
         data: {
           title,
+          slug,
           description: description ?? '',
           category: category ?? 'General',
           level: level ?? 'BEGINNER',
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest) {
                   sectionId: section.id,
                   content: lesson.content ?? '',
                   duration: lesson.duration ?? null,
-                  isFree: lIdx === 0, // first lesson of each section is free preview
+                  isPreview: lIdx === 0, // first lesson of each section is free preview
                 },
               });
             }

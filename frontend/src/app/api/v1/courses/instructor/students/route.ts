@@ -13,16 +13,16 @@ export async function GET(req: NextRequest) {
       orderBy: { enrolledAt: 'desc' },
       take: 50,
       include: {
-        user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        student: { select: { id: true, name: true, email: true, avatarUrl: true } },
         course: { select: { id: true, title: true } },
       },
     });
 
     const result = enrollments.map((e) => ({
       id: e.id,
-      name: e.user.name,
-      email: e.user.email,
-      avatarUrl: e.user.avatarUrl,
+      name: e.student.name,
+      email: e.student.email,
+      avatarUrl: e.student.avatarUrl,
       courseId: e.course.id,
       courseTitle: e.course.title,
       enrolledAt: e.enrolledAt,
