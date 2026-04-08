@@ -83,8 +83,9 @@ export default function AdminMagicCreateCoursePage() {
     setError(null);
     try {
       // Admins create courses directly
-      const response = await apiClient.post('/courses/ai-bulk', aiBlueprint) as { id: string };
-      router.push(`/admin/courses/${response.id}`);
+      const response = await apiClient.post('/courses/ai-bulk', aiBlueprint) as any;
+      const id = response?.data?.id ?? response?.id;
+      router.push(`/admin/courses/${id}`);
     } catch (err: any) {
       setError('Failed to manifest the course. Please try again.');
       setIsSubmitting(false);

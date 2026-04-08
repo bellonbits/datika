@@ -82,8 +82,9 @@ export default function MagicCreateCoursePage() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const response = await apiClient.post('/courses/ai-bulk', aiBlueprint) as { id: string };
-      router.push(`/instructor/courses/${response.id}`);
+      const response = await apiClient.post('/courses/ai-bulk', aiBlueprint) as any;
+      const id = response?.data?.id ?? response?.id;
+      router.push(`/instructor/courses/${id}`);
     } catch (err: any) {
       setError('Failed to manifest the course. Please try again.');
       setIsSubmitting(false);

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { ok, err } from '@/lib/db/auth';
+import { getAuthUser, unauthorized, forbidden, ok, err } from '@/lib/db/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,5 +39,35 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     console.error('[courses GET]', e);
     return err('Failed to fetch courses', 500);
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const auth = await getAuthUser(req);
+  if (!auth) return unauthorized();
+  if (auth.role !== 'INSTRUCTOR' && auth.role !== 'ADMIN') return forbidden();
+
+  try {
+    const body = await req.json();
+    const { title, description, category, level, price } = body;
+
+    if (!title || title.length < 3) return err('Title is required (min 3 chars)', 400);
+
+    const course = await prisma.course.create({
+      data: {
+        title,
+        description: description ?? '',
+        category: category ?? 'General',
+        level: level ?? 'BEGINNER',
+        price: price ? parseFloat(price) : 0,
+        status: 'DRAFT',
+        instructorId: auth.sub,
+      },
+    });
+
+    return ok(course, 'Course created', 201);
+  } catch (e) {
+    console.error('[courses POST]', e);
+    return err('Failed to create course', 500);
   }
 }
