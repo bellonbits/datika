@@ -1,0 +1,407 @@
+// Datika LMS — Prisma Schema
+// PostgreSQL + Prisma ORM
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  binaryTargets   = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["datika"]
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+
+  @@schema("datika")
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  FILE
+  AI_NOTES
+  QUIZ
+  ASSIGNMENT
+
+  @@schema("datika")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  SUSPENDED
+
+  @@schema("datika")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+
+  @@schema("datika")
+}
+
+enum SubmissionType {
+  QUIZ
+  ASSIGNMENT
+
+  @@schema("datika")
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADING
+  GRADED
+
+  @@schema("datika")
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+
+  @@schema("datika")
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@schema("datika")
+}
+
+// ─────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  name            String
+  avatarUrl       String?
+  passwordHash    String?
+  googleId        String?  @unique
+  role            Role     @default(STUDENT)
+  isActive        Boolean  @default(true)
+  emailVerified   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  instructorCourses Course[]       @relation("InstructorCourses")
+  enrollments       Enrollment[]
+  submissions       Submission[]
+  payments          Payment[]
+  certificates      Certificate[]
+  chatSessions      ChatSession[]
+  refreshTokens     RefreshToken[]
+
+  @@schema("datika")
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("datika")
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────
+// COURSE SYSTEM
+// ─────────────────────────────────────────────
+
+model Course {
+  id           String      @id @default(uuid())
+  title        String
+  slug         String      @unique
+  description  String
+  thumbnail    String?
+  price        Decimal     @default(0) @db.Decimal(10, 2)
+  currency     String      @default("KES")
+  level        CourseLevel @default(BEGINNER)
+  status       CourseStatus @default(DRAFT)
+  category     String?
+  duration     String?
+  tags         String[]
+  instructorId String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  instructor  User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  sections    Section[]
+  enrollments Enrollment[]
+  payments    Payment[]
+
+  @@schema("datika")
+  @@map("courses")
+}
+
+model Section {
+  id        String   @id @default(uuid())
+  title     String
+  order     Int
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@schema("datika")
+  @@map("sections")
+}
+
+model Lesson {
+  id          String     @id @default(uuid())
+  title       String
+  type        LessonType
+  order       Int
+  content     String?    // Markdown / HTML for TEXT lessons
+  videoUrl    String?    // S3 URL or external
+  fileUrl     String?    // S3 URL for downloadable files
+  duration    Int?       // seconds
+  sectionId   String
+  aiNotesId   String?    @unique
+  quizId      String?    @unique
+  assignmentId String?   @unique
+  isPreview   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  section    Section     @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  aiNotes    AiNotes?    @relation(fields: [aiNotesId], references: [id])
+  quiz       Quiz?       @relation(fields: [quizId], references: [id])
+  assignment Assignment? @relation(fields: [assignmentId], references: [id])
+  progress   LessonProgress[]
+
+  @@schema("datika")
+  @@map("lessons")
+}
+
+// ─────────────────────────────────────────────
+// AI CONTENT
+// ─────────────────────────────────────────────
+
+model AiNotes {
+  id         String   @id @default(uuid())
+  title      String
+  subject    String
+  level      String
+  abstract   String
+  content    Json     // Full structured notes JSON
+  keywords   String[]
+  generatedBy String  // userId of instructor
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  lesson Lesson?
+
+  @@schema("datika")
+  @@map("ai_notes")
+}
+
+model Quiz {
+  id         String   @id @default(uuid())
+  title      String
+  topic      String
+  difficulty String
+  timeLimit  Int?     // seconds
+  content    Json     // Array of QuizQuestion
+  lessonId   String?
+  courseId   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  lesson      Lesson?
+  submissions Submission[]
+
+  @@schema("datika")
+  @@map("quizzes")
+}
+
+model Assignment {
+  id               String   @id @default(uuid())
+  title            String
+  topic            String
+  difficulty       String
+  estimatedHours   Float
+  content          Json     // Full assignment JSON (tasks, dataset, rubric)
+  lessonId         String?
+  courseId         String?
+  dueDate          DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  lesson      Lesson?
+  submissions Submission[]
+
+  @@schema("datika")
+  @@map("assignments")
+}
+
+// ─────────────────────────────────────────────
+// ENROLLMENT & PROGRESS
+// ─────────────────────────────────────────────
+
+model Enrollment {
+  id          String           @id @default(uuid())
+  studentId   String
+  courseId    String
+  status      EnrollmentStatus @default(ACTIVE)
+  progress    Float            @default(0) // 0-100 percentage
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+  updatedAt   DateTime         @updatedAt
+
+  student        User             @relation(fields: [studentId], references: [id])
+  course         Course           @relation(fields: [courseId], references: [id])
+  lessonProgress LessonProgress[]
+
+  @@unique([studentId, courseId])
+  @@schema("datika")
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id           String   @id @default(uuid())
+  enrollmentId String
+  lessonId     String
+  completed    Boolean  @default(false)
+  watchedSeconds Int?
+  completedAt  DateTime?
+  createdAt    DateTime @default(now())
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson     Lesson     @relation(fields: [lessonId], references: [id])
+
+  @@unique([enrollmentId, lessonId])
+  @@schema("datika")
+  @@map("lesson_progress")
+}
+
+// ─────────────────────────────────────────────
+// SUBMISSIONS & GRADING
+// ─────────────────────────────────────────────
+
+model Submission {
+  id           String           @id @default(uuid())
+  studentId    String
+  type         SubmissionType
+  quizId       String?
+  assignmentId String?
+  content      Json             // Answers, code, text
+  status       SubmissionStatus @default(SUBMITTED)
+  score        Float?           // 0–100
+  grade        String?          // A, B, C, D, F
+  feedback     Json?            // AI grading result
+  gradedAt     DateTime?
+  submittedAt  DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  student    User        @relation(fields: [studentId], references: [id])
+  quiz       Quiz?       @relation(fields: [quizId], references: [id])
+  assignment Assignment? @relation(fields: [assignmentId], references: [id])
+
+  @@schema("datika")
+  @@map("submissions")
+}
+
+// ─────────────────────────────────────────────
+// PAYMENTS
+// ─────────────────────────────────────────────
+
+model Payment {
+  id              String        @id @default(uuid())
+  userId          String
+  courseId        String
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("KES")
+  status          PaymentStatus @default(PENDING)
+  provider        String        @default("mpesa")
+  checkoutRequestId String?     @unique  // M-Pesa CheckoutRequestID
+  mpesaReceiptNumber String?    @unique  // M-Pesa receipt
+  phoneNumber     String
+  metadata        Json?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@schema("datika")
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────────
+// CERTIFICATES
+// ─────────────────────────────────────────────
+
+model Certificate {
+  id             String   @id @default(uuid())
+  userId         String
+  courseId       String
+  verificationCode String @unique
+  pdfUrl         String
+  issuedAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@schema("datika")
+  @@map("certificates")
+}
+
+// ─────────────────────────────────────────────
+// AI CHAT
+// ─────────────────────────────────────────────
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String?
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id])
+  messages ChatMessage[]
+
+  @@schema("datika")
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  sessionId String
+  role      String   // 'user' | 'assistant'
+  content   String
+  tokens    Int?
+  createdAt DateTime @default(now())
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@schema("datika")
+  @@map("chat_messages")
+}
