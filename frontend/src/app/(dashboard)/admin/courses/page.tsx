@@ -32,10 +32,10 @@ export default function AdminCoursesPage() {
   const router = useRouter();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-courses'],
-    queryFn: () => apiClient.get('/courses/admin/all') as Promise<{ courses: Course[] }>,
+    queryFn: () => apiClient.get('/courses/admin/all') as Promise<{ data: { courses: Course[] } }>,
   });
 
-  const courses = data?.courses ?? [];
+  const courses: Course[] = (data as any)?.data?.courses ?? [];
 
   return (
     <div className="p-6 h-full overflow-auto text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>

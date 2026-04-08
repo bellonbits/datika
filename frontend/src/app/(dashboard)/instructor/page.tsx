@@ -41,17 +41,17 @@ export default function InstructorDashboard() {
   // 1. Fetch Instructor Courses
   const { data: coursesData, isLoading: coursesLoading } = useQuery({
     queryKey: ['instructor-courses-dashboard'],
-    queryFn: () => apiClient.get('/courses/my-courses') as Promise<Course[]>,
+    queryFn: () => apiClient.get('/courses/my-courses') as Promise<{ data: Course[] }>,
   });
 
   // 2. Fetch Recent Students/Enrollments
   const { data: studentsData, isLoading: studentsLoading } = useQuery({
     queryKey: ['instructor-students-dashboard'],
-    queryFn: () => apiClient.get('/courses/instructor/students') as Promise<Enrollment[]>,
+    queryFn: () => apiClient.get('/courses/instructor/students') as Promise<{ data: Enrollment[] }>,
   });
 
-  const courses = coursesData ?? [];
-  const enrollments = studentsData ?? [];
+  const courses: Course[] = (coursesData as any)?.data ?? [];
+  const enrollments: Enrollment[] = (studentsData as any)?.data ?? [];
 
   // Derive stats
   const totalStudents = enrollments.length;
@@ -151,7 +151,7 @@ export default function InstructorDashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/70 truncate">{e.name}</p>
-                  <h1 className="text-2xl font-black tracking-tight">Datika AI Architect</h1>
+                  <p className="text-xs text-white/30 truncate">{e.courseTitle}</p>
                 </div>
                 <span className="text-xs text-white/25">Recently</span>
               </div>

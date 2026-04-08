@@ -65,15 +65,17 @@ export default function AdminDashboard() {
     queryFn: () => apiClient.get('/payments/admin/revenue') as Promise<{ recentPayments: Payment[] }>,
   });
 
+  const uStats = (userStats as any)?.data;
+  const cStats = (courseStats as any)?.data;
   const statsList = [
-    { label: 'Total users', value: isLoadingUserStats ? null : userStats?.total, delta: `+${userStats?.newUsersToday ?? 0} today`, accent: '#00d4ff', icon: <Users size={24} /> },
-    { label: 'Active courses', value: isLoadingCourseStats ? null : courseStats?.published, delta: `${courseStats?.total ?? 0} total`, accent: '#a855f7', icon: <BookOpen size={24} /> },
-    { label: 'Revenue (KES)', value: isLoadingCourseStats ? null : (courseStats?.totalRevenue ?? 0).toLocaleString(), delta: 'Life-time', accent: '#f97316', icon: <CreditCard size={24} /> },
-    { label: 'Enrollments', value: isLoadingCourseStats ? null : courseStats?.totalEnrollments, delta: 'Total platform', accent: '#10b981', icon: <ClipboardList size={24} /> },
+    { label: 'Total users', value: isLoadingUserStats ? null : uStats?.total, delta: `+${uStats?.newUsersToday ?? 0} today`, accent: '#00d4ff', icon: <Users size={24} /> },
+    { label: 'Active courses', value: isLoadingCourseStats ? null : cStats?.published, delta: `${cStats?.total ?? 0} total`, accent: '#a855f7', icon: <BookOpen size={24} /> },
+    { label: 'Revenue (KES)', value: isLoadingCourseStats ? null : ((cStats?.totalRevenue ?? 0) as number).toLocaleString(), delta: 'Life-time', accent: '#f97316', icon: <CreditCard size={24} /> },
+    { label: 'Enrollments', value: isLoadingCourseStats ? null : cStats?.totalEnrollments, delta: 'Total platform', accent: '#10b981', icon: <ClipboardList size={24} /> },
   ];
 
-  const recentUsers = recentUsersData?.users ?? [];
-  const recentPayments = revenueData?.recentPayments ?? [];
+  const recentUsers: User[] = (recentUsersData as any)?.data?.users ?? [];
+  const recentPayments: Payment[] = (revenueData as any)?.data?.recentPayments ?? [];
 
   return (
     <div className="p-6 space-y-5 text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>

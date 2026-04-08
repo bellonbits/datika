@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
     },
   });
 
-  const users: User[] = (data as unknown as { users: User[] })?.users ?? [];
+  const users: User[] = (data as any)?.data?.users ?? [];
 
   const filtered = users.filter((u) => {
     const matchRole = roleFilter === 'All' || u.role === roleFilter;

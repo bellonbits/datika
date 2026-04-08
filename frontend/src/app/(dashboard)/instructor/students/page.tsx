@@ -34,10 +34,10 @@ export default function InstructorStudentsPage() {
   
   const { data, isLoading } = useQuery({
     queryKey: ['instructor-students'],
-    queryFn: () => apiClient.get('/courses/instructor/students') as Promise<Student[]>,
+    queryFn: () => apiClient.get('/courses/instructor/students') as Promise<{ data: Student[] }>,
   });
 
-  const students = data ?? [];
+  const students: Student[] = (data as any)?.data ?? [];
   const filtered = students.filter(s => 
     s.name.toLowerCase().includes(search.toLowerCase()) || 
     s.courseTitle.toLowerCase().includes(search.toLowerCase())
